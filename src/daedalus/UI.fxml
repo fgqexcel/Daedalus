@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="daedalus.UIController">
+  <children>
+    <MenuBar VBox.vgrow="NEVER">
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem fx:id="newfile" mnemonicParsing="false" onAction="#menuNew" text="New" />
+            <MenuItem fx:id="openfile" mnemonicParsing="false" onAction="#menuOpen" text="Open…" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem fx:id="savefile" mnemonicParsing="false" onAction="#menuSave" text="Save" />
+            <MenuItem mnemonicParsing="false" onAction="#menuSaveAs" text="Save As…" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem fx:id="compilefile" mnemonicParsing="false" onAction="#menuCompile" text="Compile" />
+                  <MenuItem fx:id="runfile" mnemonicParsing="false" onAction="#menuRun" text="Run" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" onAction="#menuQuit" text="Quit" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Edit">
+          <items>
+                  <MenuItem mnemonicParsing="false" onAction="#menuClear" text="Clear output" />
+                  <RadioMenuItem mnemonicParsing="false" onAction="#menuToggleWrap" selected="true" text="Text wrap in output" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#menuAbout" text="About Daedalus" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
+      <SplitPane dividerPositions="0.5" prefHeight="160.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <Text fx:id="filename" layoutX="132.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="New File" textAlignment="JUSTIFY" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Text>
+                  <TextArea fx:id="codeInput" layoutX="14.0" layoutY="75.0" onKeyTyped="#keyTyped" prefHeight="373.0" prefWidth="316.0" promptText="Enter verilog code here" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0">
+                     <font>
+                        <Font name="Courier New" size="14.0" />
+                     </font>
+                  </TextArea>
+               </children>
+            </AnchorPane>
+          <AnchorPane>
+               <children>
+                  <TextArea fx:id="codeOutput" editable="false" prefHeight="373.0" prefWidth="316.0" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+  </children>
+</VBox>
