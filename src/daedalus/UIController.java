@@ -233,7 +233,7 @@ public class UIController implements Initializable {
     @FXML
     public void menuQuit(Event event) {
         System.out.println("Prompt to save changes here");
-        if (saved || !named) {
+        if (saved) {
             ((Stage) codeInput.getScene().getWindow()).close();
             return;
         }
