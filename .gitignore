@@ -1,3 +1,9 @@
+nbproject/private/
+build/
+nbbuild/
+nbdist/
+.nb-gradle/
+
 # Compiled class file
 *.class
 
@@ -11,7 +17,6 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
 *.zip
