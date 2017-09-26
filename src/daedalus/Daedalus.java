@@ -18,7 +18,7 @@ public class Daedalus extends Application {
        
         stage.setScene(scene);
         stage.setTitle("Daedalus Verilog IDE for Icarus");
-        stage.getIcons().add(new Image("logo.jpg"));
+        stage.getIcons().add(new Image("/logo.jpg"));
         stage.setOnCloseRequest(e -> control.menuQuit(e));
         stage.show();
     }

@@ -114,6 +114,7 @@ public class UIController implements Initializable {
         } catch (Exception e) {
             System.out.println("Error occured opening file: " + e);
         }
+        removeBold();
     }
 
     @FXML
@@ -261,18 +262,27 @@ public class UIController implements Initializable {
         alert.setTitle("About Daedalus");
         alert.setHeaderText("Daedalus Verilog IDE for Icarus");
         alert.setContentText("Daedalus is a minimal IDE for being able to conveniently write, compile, and run verilog files. The word "
-        +"'Daedalus' comes from greek mythology. Daedalus was a skillful craftsman, and was the father of Icarus. Seeing that "
-        +"this IDE used Icarus to compile and run verilog files, I found this title to be fitting.\n\nIf you have any questions, "
-        +"concerns, or recommendations, please feel free to email me at ajp6329@louisiana.edu.\n\n"
-        +"The source for this project can be found at https://github.com/pixelrazor\n\nYours truly,\n\tAustin Pohlmann, the sole developer of this and\n\t"
-        +"potentially a fellow peer.");
+                + "'Daedalus' comes from greek mythology. Daedalus was a skillful craftsman, and was the father of Icarus. Seeing that "
+                + "this IDE used Icarus to compile and run verilog files, I found this title to be fitting.\n\nIf you have any questions, "
+                + "concerns, or recommendations, please feel free to email me at ajp6329@louisiana.edu.\n\n"
+                + "The source for this project can be found at https://github.com/pixelrazor\n\nYours truly,\n\tAustin Pohlmann, the sole developer of this and\n\t"
+                + "potentially a fellow peer.");
 
         alert.showAndWait();
     }
 
     @FXML
     private void keyTyped(KeyEvent event) {
+        if (event.isControlDown()) {
+            return;
+        }
         if (saved || !named) {
+            if ((int)event.getCharacter().charAt(0) == 13 || (int)event.getCharacter().charAt(0) == 10) {
+                System.out.println(codeInput.getParagraphs().get(codeInput.getParagraphs().size() - 2));
+                for(int i=0; i < (codeInput.getParagraphs().get(codeInput.getParagraphs().size() - 2)).chars().filter(ch -> ch == 9).count(); i++){
+                    codeInput.appendText("\t");
+                }
+            }
             Font oldFont = filename.getFont();
             compiled = saved = false;
             filename.setFont(Font.font(oldFont.getFamily(), FontWeight.BOLD, oldFont.getSize()));
