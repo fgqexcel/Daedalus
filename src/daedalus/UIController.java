@@ -1,10 +1,13 @@
 package daedalus;
 
+import com.sun.deploy.util.SystemUtils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Scanner;
@@ -18,10 +21,12 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -50,8 +55,12 @@ public class UIController implements Initializable {
     private MenuItem compilefile;
     @FXML
     private MenuItem runfile;
+    @FXML
+    private TextField binaryName;
+    @FXML
+    private TextField extraFiles;
 
-    private boolean named = false, saved = false, canCompile = true, compiled = false;
+    private boolean named = false, saved = false, canCompile = true, compiled = false, fresh = true;
     private File file = null;
 
     @Override
@@ -85,10 +94,31 @@ public class UIController implements Initializable {
         }
         filename.setText("New File");
         removeBold();
+        fresh = true;
     }
 
     @FXML
     private void menuOpen(ActionEvent event) {
+        if (!fresh && !saved) {
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Unsaved progress!");
+            alert.setHeaderText("You're about to closethis file without saving!");
+            alert.setContentText("I'm sure you were so busy realizing your logic that you didn't realize you haven't saved!");
+
+            ButtonType save = new ButtonType("Save");
+            ButtonType nosave = new ButtonType("Don't save");
+            ButtonType cancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+
+            alert.getButtonTypes().setAll(save, nosave, cancel);
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == save) {
+                menuSave(null);
+            } else if (result.get() == nosave) {
+            } else {
+                return;
+            }
+        }
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Verilog File");
         if (file != null) {
@@ -115,6 +145,7 @@ public class UIController implements Initializable {
             System.out.println("Error occured opening file: " + e);
         }
         removeBold();
+        binaryName.setText(filename.getText());
     }
 
     @FXML
@@ -152,9 +183,11 @@ public class UIController implements Initializable {
             named = saved = true;
             removeBold();
             filename.setText(file.getName().substring(0, file.getName().lastIndexOf('.')));
+            binaryName.setText(filename.getText());
         } catch (Exception e) {
             System.out.println("Error occured saving file: " + e);
         }
+
     }
 
     @FXML
@@ -167,8 +200,16 @@ public class UIController implements Initializable {
         }
         codeOutput.clear();
         try {
-            ProcessBuilder pb = new ProcessBuilder("iverilog", "-o",
-                    file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf('.')), file.getAbsolutePath());
+            List<String> args = new ArrayList();
+            String base = (file.getParentFile().getAbsolutePath() + "/").replace('/', file.getAbsolutePath().contains("\\") ? '\\' : '/');
+            args.add("iverilog");
+            args.add("-o");
+            args.add(base + binaryName.getText());
+            args.add(file.getAbsolutePath());
+            for (String s : (extraFiles.getText().replace('/', file.getAbsolutePath().contains("\\") ? '\\' : '/').split(" "))) {
+                args.add(base + s);
+            }
+            ProcessBuilder pb = new ProcessBuilder(args);
             pb.redirectErrorStream(true);
             Process p = pb.start();
             p.getInputStream();
@@ -204,7 +245,8 @@ public class UIController implements Initializable {
         }
         codeOutput.clear();
         try {
-            ProcessBuilder pb = new ProcessBuilder("vvp", file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf('.')));
+            ProcessBuilder pb = new ProcessBuilder("vvp",
+                    (file.getParentFile().getAbsolutePath() + "/").replace('/', file.getAbsolutePath().contains("\\") ? '\\' : '/') + binaryName.getText());
             pb.redirectErrorStream(true);
             Process p = pb.start();
             p.getInputStream();
@@ -229,8 +271,7 @@ public class UIController implements Initializable {
 
     @FXML
     public void menuQuit(Event event) {
-        System.out.println("Prompt to save changes here");
-        if (saved) {
+        if (saved || fresh) {
             ((Stage) codeInput.getScene().getWindow()).close();
             return;
         }
@@ -277,10 +318,10 @@ public class UIController implements Initializable {
         if (event.isControlDown()) {
             return;
         }
-        System.out.println(codeInput.getAnchor());
+        fresh = false;
         if (saved || !named) {
-            if ((int)event.getCharacter().charAt(0) == 13 || (int)event.getCharacter().charAt(0) == 10) {
-                for(int i=0; i < (codeInput.getParagraphs().get(codeInput.getParagraphs().size() - 2)).chars().filter(ch -> ch == 9).count(); i++){
+            if ((int) event.getCharacter().charAt(0) == 13 || (int) event.getCharacter().charAt(0) == 10) {
+                for (int i = 0; i < (codeInput.getParagraphs().get(codeInput.getParagraphs().size() - 2)).chars().filter(ch -> ch == 9).count(); i++) {
                     codeInput.appendText("\t");
                 }
             }
@@ -303,6 +344,18 @@ public class UIController implements Initializable {
     @FXML
     private void menuClear(ActionEvent event) {
         codeOutput.clear();
+    }
+
+    @FXML
+    private void helpExtraBinary(MouseEvent event) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("How to use 'binary name' and 'extra files' field");
+        alert.setHeaderText(null);
+        alert.setContentText("The left box is the name used to compile the binary (AKA the value supplied to iverilog when using the '-o' argument. "
+                + "The right box is a list of all other files to be compiled into the binary, all separated by spaces, and all written using a path RELATIVE to the "
+                + "CURRENTLY open file (please include the file extention, Ex: .vl).\n\niverilog -o <binary name> <current file> <list of extra files>");
+
+        alert.showAndWait();
     }
 
 }
