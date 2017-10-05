@@ -151,6 +151,7 @@ public class UIController implements Initializable {
             write.write(codeInput.getText());
             named = saved = true;
             removeBold();
+            filename.setText(file.getName().substring(0, file.getName().lastIndexOf('.')));
         } catch (Exception e) {
             System.out.println("Error occured saving file: " + e);
         }
@@ -276,9 +277,9 @@ public class UIController implements Initializable {
         if (event.isControlDown()) {
             return;
         }
+        System.out.println(codeInput.getAnchor());
         if (saved || !named) {
             if ((int)event.getCharacter().charAt(0) == 13 || (int)event.getCharacter().charAt(0) == 10) {
-                System.out.println(codeInput.getParagraphs().get(codeInput.getParagraphs().size() - 2));
                 for(int i=0; i < (codeInput.getParagraphs().get(codeInput.getParagraphs().size() - 2)).chars().filter(ch -> ch == 9).count(); i++){
                     codeInput.appendText("\t");
                 }
