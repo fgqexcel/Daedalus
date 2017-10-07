@@ -15,7 +15,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="daedalus.UIController">
+<VBox prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="daedalus.UIController">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
@@ -67,12 +67,9 @@
                   <HBox prefHeight="25.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <TextField fx:id="binaryName" promptText="Binary name..." />
-                        <Button mnemonicParsing="false" onMouseClicked="#helpExtraBinary" text="?" textAlignment="CENTER">
-                           <font>
-                              <Font name="System Bold" size="12.0" />
-                           </font>
-                        </Button>
-                        <TextField fx:id="extraFiles" prefHeight="25.0" promptText="Additional files..." />
+                        <Button mnemonicParsing="false" onMouseClicked="#addFiles" text="Add files" textAlignment="CENTER" />
+                        <Button mnemonicParsing="false" onMouseClicked="#viewFiles" text="View files" />
+                        <Button layoutX="222.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#clearFiles" text="Clear files" />
                      </children>
                   </HBox>
                   <TextArea fx:id="codeOutput" editable="false" prefHeight="373.0" prefWidth="316.0" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />

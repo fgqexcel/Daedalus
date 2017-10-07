@@ -57,11 +57,12 @@ public class UIController implements Initializable {
     private MenuItem runfile;
     @FXML
     private TextField binaryName;
-    @FXML
-    private TextField extraFiles;
+    //@FXML
+    //private TextField extraFiles;
 
     private boolean named = false, saved = false, canCompile = true, compiled = false, fresh = true;
     private File file = null;
+    List<String> extraFiles = new ArrayList();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -95,6 +96,7 @@ public class UIController implements Initializable {
         filename.setText("New File");
         removeBold();
         fresh = true;
+        clearFiles(null);
     }
 
     @FXML
@@ -145,7 +147,8 @@ public class UIController implements Initializable {
             System.out.println("Error occured opening file: " + e);
         }
         removeBold();
-        binaryName.setText(filename.getText());
+        binaryName.setText(filename.getText().substring(0, file.getName().lastIndexOf('.')));
+        clearFiles(null);
     }
 
     @FXML
@@ -206,9 +209,10 @@ public class UIController implements Initializable {
             args.add("-o");
             args.add(base + binaryName.getText());
             args.add(file.getAbsolutePath());
-            for (String s : (extraFiles.getText().replace('/', file.getAbsolutePath().contains("\\") ? '\\' : '/').split(" "))) {
-                args.add(base + s);
+            for (String s : extraFiles) {
+                args.add(s);
             }
+            System.out.println(args);
             ProcessBuilder pb = new ProcessBuilder(args);
             pb.redirectErrorStream(true);
             Process p = pb.start();
@@ -254,7 +258,7 @@ public class UIController implements Initializable {
             BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
             String line;
             while ((line = reader.readLine()) != null) {
-                codeOutput.appendText(line);
+                codeOutput.appendText(line+"\n");
             }
             reader.close();
             if (p.exitValue() == 0) {
@@ -315,20 +319,24 @@ public class UIController implements Initializable {
 
     @FXML
     private void keyTyped(KeyEvent event) {
-        if (event.isControlDown()) {
+        // I need to find a way to filter out cut/paste/undo/redo
+        if (event.isShortcutDown()) {
             return;
         }
         fresh = false;
         if (saved || !named) {
-            if ((int) event.getCharacter().charAt(0) == 13 || (int) event.getCharacter().charAt(0) == 10) {
-                for (int i = 0; i < (codeInput.getParagraphs().get(codeInput.getParagraphs().size() - 2)).chars().filter(ch -> ch == 9).count(); i++) {
-                    codeInput.appendText("\t");
-                }
-            }
+            
             Font oldFont = filename.getFont();
             compiled = saved = false;
             filename.setFont(Font.font(oldFont.getFamily(), FontWeight.BOLD, oldFont.getSize()));
         }
+        // This needs to be redone and needs to account for leading spaces for those select few people
+        // I'm thinking of using a while loop to go through the previous line 1 char at a time, and stops when it hits a not tab/space
+        if ((int) event.getCharacter().charAt(0) == 13 || (int) event.getCharacter().charAt(0) == 10) {
+                for (int i = 0; i < (codeInput.getParagraphs().get(codeInput.getParagraphs().size() - 2)).chars().filter(ch -> ch == 9).count(); i++) {
+                    codeInput.appendText("\t");
+                }
+            }
     }
 
     private void removeBold() {
@@ -347,15 +355,33 @@ public class UIController implements Initializable {
     }
 
     @FXML
-    private void helpExtraBinary(MouseEvent event) {
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("How to use 'binary name' and 'extra files' field");
-        alert.setHeaderText(null);
-        alert.setContentText("The left box is the name used to compile the binary (AKA the value supplied to iverilog when using the '-o' argument. "
-                + "The right box is a list of all other files to be compiled into the binary, all separated by spaces, and all written using a path RELATIVE to the "
-                + "CURRENTLY open file (please include the file extention, Ex: .vl).\n\niverilog -o <binary name> <current file> <list of extra files>");
-
-        alert.showAndWait();
+    private void addFiles(MouseEvent event) {
+        FileChooser chooser = new FileChooser();
+        if (file != null) {
+            chooser.setInitialDirectory(file.getParentFile());
+        }
+        List<File> files = new ArrayList(chooser.showOpenMultipleDialog(codeInput.getScene().getWindow()));
+        if (files.size() > 0) {
+            for (File f: files){
+                String filepath = f.getAbsolutePath();
+                if(!extraFiles.contains(filepath)){
+                    extraFiles.add(filepath);
+                    codeOutput.appendText("Added "+filepath+"\n");
+                }
+            }
+        }
+    }
+    
+    @FXML
+    private void viewFiles(MouseEvent event) {
+        codeOutput.clear();
+        for (String s: extraFiles)
+            codeOutput.appendText(s + "\n");
     }
 
+    @FXML
+    private void clearFiles(MouseEvent event) {
+        extraFiles.clear();
+    }
+    
 }
