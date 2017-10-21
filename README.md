@@ -1,5 +1,7 @@
 # Daedalus
 A verilog IDE that uses Icarus
+
+![screenshot](https://i.imgur.com/YnaGwfj.png)
 ## Download
 Click [here](https://github.com/pixelrazor/Daedalus/raw/master/dist/Daedalus.jar) to download.
 ## Features
