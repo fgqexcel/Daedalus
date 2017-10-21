@@ -5,15 +5,16 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 
 <VBox prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="daedalus.UIController">
   <children>
@@ -21,7 +22,7 @@
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
-            <MenuItem fx:id="newfile" mnemonicParsing="false" onAction="#menuNew" text="New" />
+            <MenuItem fx:id="newfile" mnemonicParsing="false" onAction="#menuNew" text="New tab" />
             <MenuItem fx:id="openfile" mnemonicParsing="false" onAction="#menuOpen" text="Open…" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem fx:id="savefile" mnemonicParsing="false" onAction="#menuSave" text="Save" />
@@ -50,12 +51,16 @@
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
-                  <Text fx:id="filename" layoutX="132.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="New File" textAlignment="JUSTIFY" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                  </Text>
-                  <TextArea fx:id="codeInput" layoutX="14.0" layoutY="75.0" onKeyTyped="#keyTyped" prefHeight="373.0" prefWidth="316.0" promptText="Enter verilog code here" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0">
+                  <ScrollPane prefHeight="35.0" prefWidth="396.0" vbarPolicy="NEVER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <content>
+                      <AnchorPane prefHeight="35.0" prefWidth="394.0">
+                           <children>
+                              <HBox fx:id="tablist" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                           </children>
+                        </AnchorPane>
+                    </content>
+                  </ScrollPane>
+                  <TextArea fx:id="codeInput" layoutX="14.0" layoutY="75.0" onKeyTyped="#keyTyped" prefHeight="373.0" prefWidth="316.0" promptText="Enter verilog code here" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
                      <font>
                         <Font name="Courier New" size="14.0" />
                      </font>
@@ -66,10 +71,22 @@
                <children>
                   <HBox prefHeight="25.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <TextField fx:id="binaryName" promptText="Binary name..." />
-                        <Button mnemonicParsing="false" onMouseClicked="#addFiles" text="Add files" textAlignment="CENTER" />
-                        <Button mnemonicParsing="false" onMouseClicked="#viewFiles" text="View files" />
-                        <Button layoutX="222.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#clearFiles" text="Clear files" />
+                        <TextField fx:id="binaryName" promptText="Binary name...">
+                           <tooltip>
+                              <Tooltip text="Enter the name of the file to save the compiled binary as (default is the main filename without its file extension)" />
+                           </tooltip></TextField>
+                        <Button mnemonicParsing="false" onMouseClicked="#addFiles" text="Add files" textAlignment="CENTER">
+                           <tooltip>
+                              <Tooltip text="Add files to be compiled and linked with the currently open file" />
+                           </tooltip></Button>
+                        <Button mnemonicParsing="false" onMouseClicked="#viewFiles" text="View files">
+                           <tooltip>
+                              <Tooltip text="View all additional files that will be compiled and linked with the main file" />
+                           </tooltip></Button>
+                        <Button layoutX="222.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#clearFiles" text="Clear files">
+                           <tooltip>
+                              <Tooltip text="Clear the list of files to be compiled and linked" />
+                           </tooltip></Button>
                      </children>
                   </HBox>
                   <TextArea fx:id="codeOutput" editable="false" prefHeight="373.0" prefWidth="316.0" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
